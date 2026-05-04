@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OI System Architecture</title>
+<style>
+  body {
+    margin: 0;
+    padding: 20px;
+    background: #0f1419;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: #e6edf3;
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .diagram-title {
+    font-size: 14px;
+    color: #7d8590;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+  svg { width: 100%; height: auto; }
+
+  .component { cursor: pointer; transition: filter 0.15s ease; }
+  .component:hover {
+    filter: brightness(1.3) drop-shadow(0 0 8px rgba(88, 166, 255, 0.6));
+  }
+  .component rect {
+    fill: #21262d;
+    stroke: #30363d;
+    stroke-width: 1.5;
+    rx: 6;
+  }
+  .component:hover rect {
+    stroke: #58a6ff;
+    stroke-width: 2;
+  }
+  .component text {
+    fill: #e6edf3;
+    font-size: 13px;
+    font-weight: 500;
+    pointer-events: none;
+  }
+  .component .sub {
+    fill: #7d8590;
+    font-size: 11px;
+    font-weight: 400;
+  }
+
+  .zone {
+    fill: none;
+    stroke: #30363d;
+    stroke-width: 1.5;
+    stroke-dasharray: 6 4;
+    rx: 12;
+  }
+  .zone-label {
+    fill: #58a6ff;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .link {
+    stroke: #58a6ff;
+    stroke-width: 2;
+    fill: none;
+    stroke-dasharray: 4 4;
+    opacity: 0.6;
+  }
+  .link-label {
+    fill: #7d8590;
+    font-size: 10px;
+    text-anchor: middle;
+  }
+
+  .tooltip {
+    position: absolute;
+    background: #1c2128;
+    border: 1px solid #58a6ff;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #e6edf3;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    max-width: 260px;
+    line-height: 1.4;
+    z-index: 100;
+  }
+  .tooltip.visible { opacity: 1; }
+  .tooltip-title {
+    color: #58a6ff;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="diagram-title">OI System at a Glance — Test Diagram</div>
+  <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+    <!-- Zones -->
+    <rect class="zone" x="20" y="40" width="380" height="520" />
+    <text class="zone-label" x="40" y="65">Basestation</text>
+
+    <rect class="zone" x="800" y="40" width="380" height="520" />
+    <text class="zone-label" x="820" y="65">Drone — Fuselage</text>
+
+    <!-- RF link between zones -->
+    <path class="link" d="M 400 300 Q 600 200 800 300" />
+    <text class="link-label" x="600" y="195">RF / Mesh Radio</text>
+
+    <!-- Basestation components -->
+    <a href="https://www.notion.so/Overhead-Intelligence-Wiki-Homepage-24fe5ade2e378068bea7d2718996d306" target="_top">
+      <g class="component"
+         data-tooltip-title="GCS Laptop"
+         data-tooltip-body="Ground Control Station running QGroundControl or Mission Planner.">
+        <rect x="60" y="120" width="280" height="60" />
+        <text x="80" y="148">GCS Laptop</text>
+        <text class="sub" x="80" y="166">QGroundControl / Mission Planner</text>
+      </g>
+    </a>
+
+    <a href="https://www.notion.so/Overhead-Intelligence-Wiki-Homepage-24fe5ade2e378068bea7d2718996d306" target="_top">
+      <g class="component"
+         data-tooltip-title="BaseBox Mini"
+         data-tooltip-body="OpenWrt router on 8Devices Mango. Routes telemetry between GCS, mesh radio, and Starlink failover.">
+        <rect x="60" y="220" width="280" height="60" />
+        <text x="80" y="248">BaseBox Mini</text>
+        <text class="sub" x="80" y="266">OpenWrt — 8Devices Mango</text>
+      </g>
+    </a>
+
+    <a href="https://www.notion.so/Overhead-Intelligence-Wiki-Homepage-24fe5ade2e378068bea7d2718996d306" target="_top">
+      <g class="component"
+         data-tooltip-title="Starlink Mini"
+         data-tooltip-body="LEO failover link via Tailscale VPN when RF is out of range.">
+        <rect x="60" y="320" width="280" height="60" />
+        <text x="80" y="348">Starlink Mini</text>
+        <text class="sub" x="80" y="366">Failover — Tailscale VPN</text>
+      </g>
+    </a>
+
+    <!-- Drone components -->
+    <a href="https://www.notion.so/Overhead-Intelligence-Wiki-Homepage-24fe5ade2e378068bea7d2718996d306" target="_top">
+      <g class="component"
+         data-tooltip-title="Doodle Labs Radio"
+         data-tooltip-body="Smart Mesh Radio — 900 MHz / 2.4 GHz. Primary RF link to BaseBox.">
+        <rect x="840" y="120" width="280" height="60" />
+        <text x="860" y="148">Doodle Labs Radio</text>
+        <text class="sub" x="860" y="166">Smart Mesh — 900 MHz / 2.4 GHz</text>
+      </g>
+    </a>
+
+    <a href="https://www.notion.so/Overhead-Intelligence-Wiki-Homepage-24fe5ade2e378068bea7d2718996d306" target="_top">
+      <g class="component"
+         data-tooltip-title="COMRAD (Pi CM4)"
+         data-tooltip-body="Companion computer — Raspberry Pi CM4. Runs mavp2p, sensor loggers, and ROS 2 nodes.">
+        <rect x="840" y="220" width="280" height="60" />
+        <text x="860" y="248">COMRAD</text>
+        <text class="sub" x="860" y="266">Raspberry Pi CM4 — companion computer</text>
+      </g>
+    </a>
+
+    <a href="https://www.notion.so/Overhead-Intelligence-Wiki-Homepage-24fe5ade2e378068bea7d2718996d306" target="_top">
+      <g class="component"
+         data-tooltip-title="Cube Orange"
+         data-tooltip-body="ArduPilot flight controller — QuadPlane VTOL firmware. UART to companion via /dev/ttyAMA2.">
+        <rect x="840" y="320" width="280" height="60" />
+        <text x="860" y="348">Cube Orange</text>
+        <text class="sub" x="860" y="366">Flight Controller — ArduPilot QuadPlane</text>
+      </g>
+    </a>
+
+    <a href="https://www.notion.so/Overhead-Intelligence-Wiki-Homepage-24fe5ade2e378068bea7d2718996d306" target="_top">
+      <g class="component"
+         data-tooltip-title="Powerbox"
+         data-tooltip-body="Power distribution and BEC for VTOL motors and avionics.">
+        <rect x="840" y="420" width="280" height="60" />
+        <text x="860" y="448">Powerbox</text>
+        <text class="sub" x="860" y="466">Power distribution / BEC</text>
+      </g>
+    </a>
+  </svg>
+</div>
+
+<div class="tooltip" id="tooltip">
+  <div class="tooltip-title" id="tooltip-title"></div>
+  <div id="tooltip-body"></div>
+</div>
+
+<script>
+  const tooltip = document.getElementById('tooltip');
+  const tooltipTitle = document.getElementById('tooltip-title');
+  const tooltipBody = document.getElementById('tooltip-body');
+
+  document.querySelectorAll('.component').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      tooltipTitle.textContent = el.dataset.tooltipTitle;
+      tooltipBody.textContent = el.dataset.tooltipBody;
+      tooltip.classList.add('visible');
+    });
+    el.addEventListener('mousemove', (e) => {
+      tooltip.style.left = (e.pageX + 15) + 'px';
+      tooltip.style.top = (e.pageY + 15) + 'px';
+    });
+    el.addEventListener('mouseleave', () => {
+      tooltip.classList.remove('visible');
+    });
+  });
+</script>
+</body>
+</html>
